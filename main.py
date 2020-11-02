@@ -3,34 +3,34 @@ from watchdog.observers import Observer
 from env import TRACKED_FOLDERS
 from mFileSystemEventHandler import mHandler
 from helpers import mPrint
+import sort as sort
+import os
 
-observer = None
+observer = Observer()
 
 def setup():
     global observer
-    mPrint("Started")
 
-    observer = Observer()
     eventHandler = mHandler()
-    scheduleFolders(observer, eventHandler, 0)
 
+    for folder in TRACKED_FOLDERS:
+        mPrint(folder)
+        sortExistingFiles(folder)
+        setupFolderTrack(folder, eventHandler)
+        
     observer.start()
 
-def scheduleFolders(observer, eventHandler, nextFolderIndex):
-    if nextFolderIndex >= len(TRACKED_FOLDERS):
-        return
+def sortExistingFiles(folder):
+    for filename in os.listdir(folder):
+        filepath = folder + os.path.sep + filename
+        sort.sort(filepath)
 
-    folder = TRACKED_FOLDERS[nextFolderIndex]
-    mPrint(folder)
+
+def setupFolderTrack(folder, eventHandler):
     observer.schedule(eventHandler, folder, recursive=False)
-
-    nextFolderIndex += 1
-    scheduleFolders(observer, eventHandler, nextFolderIndex)
-
 
 
 setup()
-
 
 try:
     while True:

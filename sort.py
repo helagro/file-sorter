@@ -31,14 +31,14 @@ def extSortMatches(filepath, sortRule):
     for extMatch in sortRule.sortMathes:
         if(extension == extMatch):
             return True
-
     return False
 
 def moveToFolder(filepath, folderpath):
+    if (not os.path.isfile(filepath)):
+        return
+
     filename = os.path.basename(filepath)
-
     newFilePath = folderpath + os.path.sep + filename
-
     vacantFilePath = getVacantFilePath(newFilePath)
 
     os.rename(filepath, vacantFilePath)
@@ -50,8 +50,6 @@ def getVacantFilePath(filePath):
 
     while os.path.isfile(filePath):
         i += 1
-
-        numberStr = "({0})".format(i)
         filePath = "{0}({1}){2}".format(originalFilePathWithoutExtension, i, extension)
 
     return filePath
