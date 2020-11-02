@@ -4,12 +4,16 @@ from watchdog.events import FileSystemEventHandler
 import os
 from env import TRACKED_FOLDERS
 
+observer = None
+
 def setup():
+    global observer
     mPrint("Started")
 
     observer = Observer()
     eventHandler = mFileSystemEventHandler()
     scheduleFolders(observer, eventHandler, 0)
+
     observer.start()
     
 
@@ -30,14 +34,26 @@ def scheduleFolders(observer, eventHandler, nextFolderIndex):
 
 class mFileSystemEventHandler(FileSystemEventHandler):
     def dispatch(self, event):
-        if(event.__class__.__name__ == "DirModifiedEvent"):
-            self.onModified(event)
+        if(self.isAddEvent(event)):
+            self.onAdded(event)
 
-    def onModified(self, event):
-        mPrint("Modified", event.src_path)
+    def isAddEvent(self, event):
+        className = event.__class__.__name__
+        return className == "FileModifiedEvent" or className == "FileCreatedEvent"
+
+    def onAdded(self, event):
+        filename = event.src_path
+
+        extension = os.path.splitext(filename)[1]
+        mPrint(filename, extension)
 
 
 setup()
 
-while True:
-    time.sleep(3)
+
+try:
+    while True:
+        time.sleep(3600)
+except:
+    observer.stop()
+observer.join()
