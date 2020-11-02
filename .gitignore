@@ -1,3 +1,4 @@
 env.py
 test
 *.pyc
+nohup.out

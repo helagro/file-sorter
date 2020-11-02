@@ -1,3 +1,0 @@
-sorting types
-    extension => folder
-        multiple extensions - 1 folder
